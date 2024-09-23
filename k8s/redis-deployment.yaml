@@ -1,0 +1,20 @@
+# Deployment for redis pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+spec:
+  replicas: 1 # redis does support clustering instances for availability + bandwidth, but we keep it simple
+  selector:
+    matchLabels:
+      component: redis
+  template:
+    metadata:
+      labels:
+        component: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis
+          ports:
+            - containerPort: 6379 # default redis port

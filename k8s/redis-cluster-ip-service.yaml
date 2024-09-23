@@ -1,0 +1,12 @@
+# ClusterIP service for redis-deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: redis # selects the redis-deployment deployment
+  ports:
+    - port: 6379 # port for other pods/containers in the cluster to access the selected pod(s)
+      targetPort: 6379 # forward incoming traffic to this port in the selected pod(s)

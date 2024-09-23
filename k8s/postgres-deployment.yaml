@@ -1,0 +1,34 @@
+# Deployment for postgres pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1 # postgres does support clustering instances for availability + bandwidth, but we keep it simple
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      volumes:
+        - name: postgres-storage # name to reference under containers volumeMounts
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim # use the PVC we defined + named in database-persistent-volume-claim.yaml
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432 # default postgres port
+          volumeMounts: # how storage should be used within container(s)
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data # where inside container this storage should be mounted (in this case, default data dir for postgres)
+              subPath: postgres # container will write to this subdir within the persistent volume (needed for our postgres use case)
+          env:
+            - name: POSTGRES_PASSWORD # must specify here since we're not using the default
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword # name of the secret object we set up
+                  key: PGPASSWORD # name of key within secret

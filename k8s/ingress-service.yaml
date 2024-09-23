@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations: # additional higher level config for Ingress service
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 # rewrite */api requests to remove "/api" when sending to server
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /?(.*) # route "/" requests to client ClusterIP service
+            pathType: ImplementationSpecific
+            backend:
+              service: 
+                name: client-cluster-ip-service
+                port: 
+                  number: 3000
+          - path: /api/?(.*) # route "/" requests to server ClusterIP service
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: service-cluster-ip-service
+                port: 
+                  number: 5000

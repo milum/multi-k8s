@@ -1,0 +1,12 @@
+# "Advertises" a storage option that can be used by this cluster's pods
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim # Pod templates use this name to use this PVC
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  # storageClassName: # using default storageclass

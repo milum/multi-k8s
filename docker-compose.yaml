@@ -1,0 +1,52 @@
+version: '3'
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+  redis:
+    image: 'redis:latest'
+  api: # using 'api' service name over 'server' for clarity in nginx conf
+    build:
+      dockerfile: Dockerfile.dev # looks in the context for this dockerfile
+      context: './server'
+    volumes:
+      - /home/node/app/node_modules # anonymous volume
+      - ./server:/home/node/app # bind mount; by linking source code to host dir, code changes get reflected in container 
+    environment:
+      - REDIS_HOST=redis # with docker compose, just need to specify service name
+      - REDIS_PORT=6379 # default redis port
+      - PGUSER=postgres # default
+      - PGHOST=postgres # default
+      - PGDATABASE=postgres # default
+      - PGPASSWORD=postgres_password # default
+      - PGPORT=5432 # default postgres port
+  client:
+    environment:
+      - WDS_SOCKET_PORT=0
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /home/node/app/node_modules
+      - ./client:/home/node/app
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /home/node/app/node_modules
+      - ./worker:/home/node/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  nginx:
+    restart: always # unlike worker, want nginx to stay running if issues arise
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    depends_on:
+      - api
+      - client
+    ports:
+      - '3050:80' # browser will connect to app on port 3050

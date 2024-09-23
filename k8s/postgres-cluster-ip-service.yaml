@@ -1,0 +1,12 @@
+# ClusterIP service for postgres-deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-cluster-ip-service # use this as hostname  
+spec:
+  type: ClusterIP
+  selector:
+    component: postgres # selects the rpostgresedis-deployment deployment
+  ports:
+    - port: 5432 # port for other pods/containers in the cluster to access the selected pod(s)
+      targetPort: 5432 # forward incoming traffic to this port in the selected pod(s)

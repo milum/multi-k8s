@@ -1,0 +1,12 @@
+# ClusterIP service for client-deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: web # selects the client-deployment deployment
+  ports:
+    - port: 3000 # port for other pods/containers in the cluster to access the selected pod(s)
+      targetPort: 3000 # forward incoming traffic to this port in the selected pod(s)
