@@ -21,6 +21,6 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: service-cluster-ip-service
+                name: server-cluster-ip-service
                 port: 
                   number: 5000
