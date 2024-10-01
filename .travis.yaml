@@ -1,0 +1,36 @@
+sudo: required # needed for docker
+services:
+  - docker
+before_install:
+  ############## Google Cloud SDK Configuration ##############
+  # decrypt service account credentials stored on Travis (cmd generated with travis encrypt-file)
+  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
+  # install and set up Google Cloud SDK
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  # install and update kubectl; we can use kubectl commands for this Google Cloud project the same way
+  #  you would on your local machine
+  - gcloud components update kubectl
+  # authorize GCloud SDK with our service account using decrypted credentials
+  - gcloud auth activate-service-acount --key-file service-account.json
+  # specify project (identified by project ID) and zone
+  - gcloud config set project tough-access-437221-f3 
+  - gcloud config set compute/zone us-east1-b
+  # specify cluster
+  - gcloud container clusters get-credentials multi-cluster
+  ############## Log into Docker CLI ##############
+  # login using environment variables set in Travis project settings
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin 
+  ############## Build test version of multi-client ##############
+  - docker build -t dfi3g/react-test -f ./client/Dockerfile.dev ./client
+
+############## Run tests ##############
+script:
+  - docker run -e CI=true dfi3g/react-test npm test
+
+############## Deploy new images ##############
+deploy:
+  provider: script # use custom script to deploy
+  script: bash ./deploy.sh
+  on:
+    branch: master # only deploy on changes to master
