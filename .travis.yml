@@ -1,5 +1,5 @@
 sudo: required # needed for docker
-dist: focal # need Travis runner to use newer ubuntu distribution for python v3.8
+dist: focal # need newer ubuntu distribution for CI environment (to get python v3.8)
 services:
   - docker
 env: # environment variables
@@ -17,7 +17,7 @@ before_install:
   #  you would on your local machine
   - gcloud components update kubectl
   # authorize GCloud SDK with our service account using decrypted credentials
-  - gcloud auth activate-service-acount --key-file service-account.json
+  - gcloud auth activate-service-account --key-file service-account.json
   # specify project (identified by project ID) and zone
   - gcloud config set project tough-access-437221-f3 
   - gcloud config set compute/zone us-east1-b
