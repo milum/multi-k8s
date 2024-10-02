@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: rallycoding/multi-server
+          image: rallycoding/multi-server # implicitly selects the latest version (rallycoding/multi-server:latest)
           ports:
             - containerPort: 5000
           env:
