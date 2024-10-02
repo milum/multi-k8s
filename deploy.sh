@@ -20,7 +20,7 @@ docker push dfi3g/multi-worker --all-tags
 # docker push dfi3g/multi-worker:$SHA
 
 # apply all k8s configs (this works because we set up kubectl for gcloud in the Travis yaml)
-kubectl apply -f /k8s
+kubectl apply -f ./k8s
 
 kubectl set image deployments/client-deployment client=dfi3g/multi-client:$SHA
 kubectl set image deployments/server-deployment server=dfi3g/multi-server:$SHA
