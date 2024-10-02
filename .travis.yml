@@ -1,6 +1,10 @@
 sudo: required # needed for docker
 services:
   - docker
+env: # environment variables
+  global:
+    - SHA=$(git rev-parse HEAD) # current commit SHA
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1 # disable user prompts for Google Cloud CLI
 before_install:
   ############## Google Cloud SDK Configuration ##############
   # decrypt service account credentials stored on Travis (cmd generated with travis encrypt-file)
